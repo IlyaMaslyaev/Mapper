@@ -1,4 +1,4 @@
-﻿namespace OakMapperTests.TestClasses
+﻿namespace MapperTests.TestClasses
 {
     internal class TestA
     {

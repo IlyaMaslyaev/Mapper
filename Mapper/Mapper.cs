@@ -2,23 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OakMapper
+namespace Mapper
 {
-    public class OakMapper
+    public class Mapper
     {
-        private object _src;
-        private object _temp;
-        private object _dest;
-
-        /// <summary>
-        /// Initializes an instanse of OakMapper class.
-        /// </summary>
-        public OakMapper()
-        {
-            _src = null;
-            _temp = null;
-            _dest = null;
-        }
+        internal object Src;
+        internal object Temp;
+        internal object Dest;
 
         /// <summary>
         /// Simply maps source class properties values into destination class.
@@ -106,13 +96,13 @@ namespace OakMapper
         /// <typeparam name="TDestination">Destination class type.</typeparam>
         /// <param name="source">Source class.</param>
         /// <returns>New instance of class with specified type.</returns>
-        public WoodenMapNode<TSource, TDestination> Map<TSource, TDestination>(TSource source)
+        public MapNode<TSource, TDestination> Map<TSource, TDestination>(TSource source)
            where TSource : new()
             where TDestination : new()
         {
-            _src = source;
-            _temp = QuickMap<TSource, TDestination>(source);
-            return new WoodenMapNode<TSource, TDestination>((TSource)_src, (TDestination)_temp, (TDestination)_dest);
+            Src = source;
+            Temp = QuickMap<TSource, TDestination>(source);
+            return new MapNode<TSource, TDestination>((TSource)Src, (TDestination)Temp, (TDestination)Dest);
         }
 
         /// <summary>
@@ -122,13 +112,13 @@ namespace OakMapper
         /// <typeparam name="TDestination">Destination class type.</typeparam>
         /// <param name="source">Source class.</param>
         /// <returns>New instance of class with specified type.</returns>
-        public WoodenMapNode<TSource, TDestination> Map<TSource, TDestination>(IEnumerable<TSource> source)
+        public MapNode<TSource, TDestination> Map<TSource, TDestination>(IEnumerable<TSource> source)
             where TSource : new()
             where TDestination : new()
         {
-            _src = source;
-            _temp = QuickMap<TSource, TDestination>(source);
-            return new WoodenMapNode<TSource, TDestination>((TSource)_src, (TDestination)_temp, (TDestination)_dest);
+            Src = source;
+            Temp = QuickMap<TSource, TDestination>(source);
+            return new MapNode<TSource, TDestination>((TSource)Src, (TDestination)Temp, (TDestination)Dest);
         }
 
         /// <summary>
@@ -139,13 +129,13 @@ namespace OakMapper
         /// <param name="source">Source class.</param>
         /// <param name="destination">Destination class.</param>
         /// <returns>New instance of class with specified type.</returns>
-        public WoodenMapNode<TSource, TDestination> Map<TSource, TDestination>(TSource source, TDestination destination)
+        public MapNode<TSource, TDestination> Map<TSource, TDestination>(TSource source, TDestination destination)
             where TSource : new()
         {
-            _src = source;
-            _temp = QuickMap(source, destination);
-            _dest = destination;
-            return new WoodenMapNode<TSource, TDestination>((TSource)_src, (TDestination)_temp, (TDestination)_dest);
+            Src = source;
+            Temp = QuickMap(source, destination);
+            Dest = destination;
+            return new MapNode<TSource, TDestination>((TSource)Src, (TDestination)Temp, (TDestination)Dest);
         }
 
         /// <summary>
@@ -156,49 +146,14 @@ namespace OakMapper
         /// <param name="source">Source classes collection.</param>
         /// <param name="destination">Destination classes collection.</param>
         /// <returns>New instance of class with specified type.</returns>
-        public WoodenMapNode<TSource, TDestination> Map<TSource, TDestination>(IEnumerable<TSource> source, IEnumerable<TDestination> destination)
+        public MapNode<TSource, TDestination> Map<TSource, TDestination>(IEnumerable<TSource> source, IEnumerable<TDestination> destination)
             where TSource : new()
         {
-            _src = source;
-            _temp = QuickMap(source, destination);
-            _dest = destination;
-            return new WoodenMapNode<TSource, TDestination>((TSource)_src, (TDestination)_temp, (TDestination)_dest);
-        }
-    }
-
-    public class WoodenMapNode<TSource, TDestination>
-    {
-        private readonly TSource _src;
-        private readonly TDestination _temp;
-        private readonly TDestination _dest;
-        public WoodenMapNode(TSource src, TDestination temp, TDestination dest)
-        {
-            _src = src;
-            _temp = temp;
-            _dest = dest;
-        }
-
-        public WoodenMapNode<TSource, TDestination> Set(Action<TDestination> action)
-        {
-            action(_temp);
-            return this;
-        }
-
-        public WoodenMapNode<TSource, TDestination> PickSource(Action<TSource, TDestination> action)
-        {
-            action(_src, _temp);
-            return this;
-        }
-
-        public WoodenMapNode<TSource, TDestination> PickDestination(Action<TDestination, TDestination> action)
-        {
-            action(_dest, _temp);
-            return this;
-        }
-
-        public TDestination Apply()
-        {
-            return _temp;
+            Src = source;
+            Temp = QuickMap(source, destination);
+            Dest = destination;
+            return new MapNode<TSource, TDestination>((TSource)Src, (TDestination)Temp, (TDestination)Dest);
         }
     }
 }
+

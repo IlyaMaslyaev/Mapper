@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Mapper;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OakMapperTests.TestClasses;
+using MapperTests.TestClasses;
 
-namespace OakMapperTests
+namespace MapperTests
 {
     [TestClass]
-    public class OakMapperTests
+    public class MapperTests
     {
         [TestMethod]
         public void GlobalTest()
         {
-            var wm = new OakMapper.OakMapper();
+            var wm = new Mapper.Mapper();
             var a = new TestA
             {
                 A = "heh",
@@ -38,9 +39,9 @@ namespace OakMapperTests
 
             var collectA = new List<TestA>()
             {
-                new TestA{A = "WOW", B = 123 ,C = true},
-                new TestA{A = "SO", B = 234, C = false},
-                new TestA{A = "HAPPY", B = 345, C = false}
+                new TestA {A = "WOW", B = 123, C = true},
+                new TestA {A = "SO", B = 234, C = false},
+                new TestA {A = "HAPPY", B = 345, C = false}
             };
 
             var collectB = wm.QuickMap<TestA, TestB>(collectA).ToList();
@@ -49,7 +50,7 @@ namespace OakMapperTests
 
             for (var i = 0; i < collectA.Count; i++)
             {
-                Assert.AreEqual(collectA.ElementAt(i).A,collectB.ElementAt(i).A);
+                Assert.AreEqual(collectA.ElementAt(i).A, collectB.ElementAt(i).A);
                 Assert.AreEqual(collectA.ElementAt(i).C, collectB.ElementAt(i).C);
             }
             collectA = wm.QuickMap<TestB, TestA>(collectB, collectA).ToList();
@@ -76,8 +77,29 @@ namespace OakMapperTests
                 .Set(x => x.B = 777)
                 .Apply();
 
+            var ppppp = new ProfiledMapper();
+
+            ppppp.Initialize(new List<Action>
+            {
+                () => ppppp.AddMap<TestB, TestA>((src, dest) =>
+                {
+                    ppppp.Map(src, dest)
+                        .Set(x => x.A = "Yay")
+                        .Set(x => x.A += $" At {DateTime.Now.ToShortDateString()}")
+                        .Set(x => x.C = false);
+                })
+                ,
+                () => ppppp.AddMap<TestA, TestB>((src, dest) => ppppp.Map(src, dest).Set(x => x.C = false))
+            });
+
+
+            p = ppppp.MapByProfile(pp, p);
+            pp = ppppp.MapByProfile(p, pp);
+
             Assert.AreEqual(p.A, pp.A);
             Assert.AreEqual(p.C, pp.C);
+
+
         }
     }
 }
