@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace Mapper
@@ -73,7 +72,6 @@ namespace Mapper
 
             return destination;
         }
-
 
         /// <summary>
         /// Simply maps source class collection into collection of destination classed.

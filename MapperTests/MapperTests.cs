@@ -13,7 +13,7 @@ namespace MapperTests
         [TestMethod]
         public void GlobalTest()
         {
-            var wm = new Mapper.Mapper();
+            var mapper = new Mapper.Mapper();
             var a = new TestA
             {
                 A = "heh",
@@ -21,7 +21,7 @@ namespace MapperTests
                 C = true
             };
 
-            var b = wm.QuickMap<TestA, TestB>(a);
+            var b = mapper.QuickMap<TestA, TestB>(a);
 
             Assert.AreEqual(a.A, b.A);
             Assert.AreEqual(a.C, b.C);
@@ -32,7 +32,7 @@ namespace MapperTests
             Assert.AreNotEqual(a.A, b.A);
             Assert.AreNotEqual(a.C, b.C);
 
-            a = wm.QuickMap(b, a);
+            a = mapper.QuickMap(b, a);
 
             Assert.AreEqual(a.A, b.A);
             Assert.AreEqual(a.C, b.C);
@@ -44,7 +44,7 @@ namespace MapperTests
                 new TestA {A = "HAPPY", B = 345, C = false}
             };
 
-            var collectB = wm.QuickMap<TestA, TestB>(collectA).ToList();
+            var collectB = mapper.QuickMap<TestA, TestB>(collectA).ToList();
 
             Assert.AreEqual(collectA.Count, collectB.Count);
 
@@ -53,7 +53,7 @@ namespace MapperTests
                 Assert.AreEqual(collectA.ElementAt(i).A, collectB.ElementAt(i).A);
                 Assert.AreEqual(collectA.ElementAt(i).C, collectB.ElementAt(i).C);
             }
-            collectA = wm.QuickMap<TestB, TestA>(collectB, collectA).ToList();
+            collectA = mapper.QuickMap<TestB, TestA>(collectB, collectA).ToList();
 
             for (var i = 0; i < collectA.Count; i++)
             {
@@ -61,43 +61,42 @@ namespace MapperTests
                 Assert.AreEqual(collectA.ElementAt(i).C, collectB.ElementAt(i).C);
             }
 
-            var p = new TestA() { A = "start", B = 12, C = false };
+            var c = new TestA { A = "start", B = 12, C = false };
 
-            var pp = wm.Map<TestA, TestB>(p)
+            var d = mapper.Map<TestA, TestB>(c)
                 .Set(x => x.A = "Finish")
                 .Set(x => x.A += $" At {DateTime.Now.ToShortDateString()}")
                 .Set(x => x.C = true)
                 .Apply();
 
-            Assert.AreNotEqual(p.A, pp.A);
-            Assert.AreNotEqual(p.C, pp.C);
+            Assert.AreNotEqual(c.A, d.A);
+            Assert.AreNotEqual(c.C, d.C);
 
-            p = wm.Map(pp, p)
+            c = mapper.Map(d, c)
                 .PickSource((x, y) => x.A = y.A)
                 .Set(x => x.B = 777)
                 .Apply();
 
-            var ppppp = new ProfiledMapper();
+            var profiledMapper = new ProfiledMapper();
 
-            ppppp.Initialize(new List<Action>
-            {
-                () => ppppp.AddMap<TestB, TestA>((src, dest) =>
+            profiledMapper.Initialize(
+                () => profiledMapper.AddMap<TestB, TestA>((src, dest) =>
                 {
-                    ppppp.Map(src, dest)
+                    profiledMapper.Map(src, dest)
                         .Set(x => x.A = "Yay")
                         .Set(x => x.A += $" At {DateTime.Now.ToShortDateString()}")
                         .Set(x => x.C = false);
                 })
                 ,
-                () => ppppp.AddMap<TestA, TestB>((src, dest) => ppppp.Map(src, dest).Set(x => x.C = false))
-            });
+                () => profiledMapper.AddMap<TestA, TestB>((src, dest) => profiledMapper.Map(src, dest).Set(x => x.C = false))
+            );
 
 
-            p = ppppp.MapByProfile(pp, p);
-            pp = ppppp.MapByProfile(p, pp);
+            c = profiledMapper.MapByProfile(d, c);
+            d = profiledMapper.MapByProfile(c, d);
 
-            Assert.AreEqual(p.A, pp.A);
-            Assert.AreEqual(p.C, pp.C);
+            Assert.AreEqual(c.A, d.A);
+            Assert.AreEqual(c.C, d.C);
 
 
         }

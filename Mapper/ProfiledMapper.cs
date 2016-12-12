@@ -6,7 +6,7 @@ namespace Mapper
 {
     public class ProfiledMapper : Mapper
     {
-        private Dictionary<string, Action<object, object>> _maps = new Dictionary<string, Action<object, object>>();
+        private readonly Dictionary<string, Action<object, object>> _maps = new Dictionary<string, Action<object, object>>();
 
         public void AddMap<TSource, TDestination>(Action<TSource, TDestination> map)
         {
@@ -14,7 +14,7 @@ namespace Mapper
             _maps.Add($"{typeof(TSource).Name}->{typeof(TDestination).Name}", f);
         }
 
-        public void Initialize(IEnumerable<Action> maps)
+        public void Initialize(params Action[] maps)
         {
             foreach (var m in maps)
             {
@@ -35,12 +35,12 @@ namespace Mapper
         public IEnumerable<TDestination> MapByProfile<TSource, TDestination>(IEnumerable<TSource> src, IEnumerable<TDestination> dest)
         {
             var result = new List<TDestination>();
-            var destinations = dest as IList<TDestination> ?? dest.ToList();
-            var sources = src as IList<TSource> ?? src.ToList();
+            var destinations = dest as IList<TDestination> ?? dest.ToArray();
+            var sources = src as IList<TSource> ?? src.ToArray();
 
             if (sources.Count == destinations.Count)
             {
-                result.AddRange(destinations.Select((t, i) => MapByProfile(sources.ElementAt(i), destinations.ElementAt(i))));
+                result.AddRange(destinations.Select((t, i) => MapByProfile(sources[i], destinations[i])));
             }
             else
             {
